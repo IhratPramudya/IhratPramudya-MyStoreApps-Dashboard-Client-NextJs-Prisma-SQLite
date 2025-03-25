@@ -36,8 +36,8 @@ const FilterSection = () => {
     const searchParams = useSearchParams();
     const accordion = searchParams.get("openAccordion");
 
-    const [minPrice, setMinPrice] = useState(searchParams.get("minPrice") || "1");
-    const [maxPrice, setMaxPrice] = useState(searchParams.get("maxPrice") || "100");
+    const minPrice = searchParams.get("minPrice") || "1";
+    const maxPrice = searchParams.get("maxPrice") || "100";
 
 
     const router = useRouter();
@@ -75,10 +75,8 @@ const FilterSection = () => {
     
     const updateUrl = (value) => {
         const params = new URLSearchParams(searchParams.toString());
-        setMaxPrice(value[1])
-        setMinPrice(value[0])
-        params.set("minPrice", minPrice);
-        params.set("maxPrice", maxPrice);
+        params.set("minPrice", value[0]);
+        params.set("maxPrice", value[1]);
         params.set("openAccordion", "priceRange");
         router.push(`?${params.toString()}`, { scroll: false });
     }
