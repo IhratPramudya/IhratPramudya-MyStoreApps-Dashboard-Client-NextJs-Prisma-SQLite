@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { ChevronDownIcon } from "@/components/icons";
 import Accordion from "@/components/ui/Accordion";
 import PriceRangeSlider from "@/components/ui/PriceRangeSlider";
-import { cn, objectToQueryString } from "@/lib/utils";
+import { objectToQueryString } from "@/lib/utils";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 
 const FilterSection = () => {
     const CategoryItems = [
@@ -33,44 +33,56 @@ const FilterSection = () => {
         {label: "In Stock", value: "true"},
         {label: "Out of Stock", value: "false"}
     ]
+    const searchParams = useSearchParams();
+    const accordion = searchParams.get("openAccordion");
 
-    const router = useRouter()
-    const searchParams = useSearchParams()
-    const accordion = searchParams.get("openAccordion")
-    const openAccordion = accordion?.split(",") || [];
+    const [minPrice, setMinPrice] = useState(searchParams.get("minPrice") || "1");
+    const [maxPrice, setMaxPrice] = useState(searchParams.get("maxPrice") || "100");
 
+
+    const router = useRouter();
+    const openAccordion = accordion ? accordion.split(",") : [];
+
+    
     const updateSearchParams = (newParamsArray) => {
-        const updateSearchParams = {...newParamsArray};
-        console.log("NewParamsArray : ", newParamsArray);
-        newParamsArray?.forEach((params) => {
-            Object.entries(params).forEach(([key, value])=> {
-                if(value === null || value==="") {
-                    delete updateSearchParams[key];
-                } else {
-                    updateSearchParams[key] = value
-                }
-            })
+        // Gabungkan array objek menjadi satu objek
+        const updatedParams = Object.assign({}, ...newParamsArray);
+    
+        // Hapus parameter jika nilainya null atau kosong
+        Object.keys(updatedParams).forEach((key) => {
+            if (updatedParams[key] === null) {
+               delete updatedParams[key];
+            }
         });
-        console.log("After updatedSearchParams : ", updateSearchParams)  
-        router.push(`/?${objectToQueryString(updateSearchParams)}`)
-    }
-
+    
+        console.log("Updated Search Params:", updatedParams);
+        router.push(`/?${objectToQueryString(updatedParams)}`, { scroll: false });
+    };
+    
     const handleAccordion = (value) => {
-        const newOpenAccordion = openAccordion.includes(value) ? openAccordion.filter((item) => item!==value)
-            : [...openAccordion, value]
-            console.log(newOpenAccordion)
-        updateSearchParams([{openAccordion: newOpenAccordion.join(",")}])
+        const newOpenAccordion = openAccordion.includes(value)
+            ? openAccordion.filter((item) => item !== value)
+            : [...openAccordion, value];
+    
+        console.log(newOpenAccordion);
+    
+        updateSearchParams(newOpenAccordion.length > 0 
+            ? [{ openAccordion: newOpenAccordion.join(",") }] 
+            : [{ openAccordion: null }]
+        );
+    };
+
+    
+    const updateUrl = (value) => {
+        const params = new URLSearchParams(searchParams.toString());
+        setMaxPrice(value[1])
+        setMinPrice(value[0])
+        params.set("minPrice", minPrice);
+        params.set("maxPrice", maxPrice);
+        params.set("openAccordion", "priceRange");
+        router.push(`?${params.toString()}`, { scroll: false });
     }
-
-    const minPrice = searchParams.get("minPrice") || "0";
-    const maxPrice = searchParams.get("maxPrice") || "100";
-
-  
-    const handlePriceRangeChange = (value) => {
-        console.log(value)
-        updateSearchParams([{minPrice:value[0]}, {maxPrice:value[1]}])
-    }
-
+    
     
     return (
         <div className="rounded-lg shadow-lg space-y-3 p-5 bg-white h-fit">
@@ -108,8 +120,12 @@ const FilterSection = () => {
                             minValue={0} 
                             maxValue={100} 
                             value={[minPrice, maxPrice]}
-                            handleChange={handlePriceRangeChange}
+                            handleChange={updateUrl}
                             />
+                </div>
+                <div className="flex justify-between mt-2">
+                    <span>${minPrice}</span>
+                    <span>${maxPrice}</span>
                 </div>
             </Accordion>
             <Accordion
