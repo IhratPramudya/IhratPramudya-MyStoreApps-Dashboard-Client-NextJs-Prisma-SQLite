@@ -4,6 +4,7 @@ import Accordion from "@/components/ui/Accordion";
 import PriceRangeSlider from "@/components/ui/PriceRangeSlider";
 import { objectToQueryString } from "@/lib/utils";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const FilterSection = () => {
     const CategoryItems = [
@@ -35,12 +36,25 @@ const FilterSection = () => {
     const searchParams = useSearchParams();
     const accordion = searchParams.get("openAccordion");
 
-    // const minPrice = searchParams.get("minPrice") || "1";
-    // const maxPrice = searchParams.get("maxPrice") || "100";
 
 
     const router = useRouter();
     const openAccordion = accordion ? accordion.split(",") : [];
+
+    const [minValue, setMinValue] = useState(0);
+    const [maxValue, setMaxValue] = useState(100);
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            localStorage.setItem("minData", "0")
+            localStorage.setItem("maxData", "100")
+            const savedMin = localStorage.getItem("minData")
+            const savedMax = localStorage.getItem("maxData")
+
+            setMinValue(savedMin ? Number(savedMin) : "0");
+            setMaxValue(savedMax ? Number(savedMax) : "100");
+        }
+    }, [])
 
     
     const updateSearchParams = (newParamsArray) => {
@@ -88,6 +102,8 @@ const FilterSection = () => {
         const params = new URLSearchParams(searchParams.toString());
         localStorage.setItem("minData", value[0])
         localStorage.setItem("maxData", value[1])
+        setMinValue(value[0]);
+        setMaxValue(value[1]);
         params.set("minPrice", value[0]);
         params.set("maxPrice", value[1]);
         params.set("openAccordion", "priceRange");
@@ -130,13 +146,13 @@ const FilterSection = () => {
                         <PriceRangeSlider 
                             minValue={0} 
                             maxValue={100} 
-                            value={[localStorage.getItem("minData"), localStorage.getItem("maxData")]}
+                            value={[minValue, maxValue]}
                             handleChange={updateUrl}
                             />
                 </div>
                 <div className="flex justify-between mt-2">
-                    <span>${localStorage.getItem("minData")}</span>
-                    <span>${localStorage.getItem("maxData")}</span>
+                    <span>${minValue}</span>
+                    <span>${maxValue}</span>
                 </div>
             </Accordion>
             <Accordion

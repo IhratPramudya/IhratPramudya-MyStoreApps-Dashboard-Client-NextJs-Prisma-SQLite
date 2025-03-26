@@ -29,7 +29,7 @@ const ProductCard = () => {
                     <div className="flex gap-x-1">
                         {
                             [...Array(5)].map((star) => (
-                                <StarIcon />
+                                <StarIcon key={star} />
                             ))
                         }
                     </div>
