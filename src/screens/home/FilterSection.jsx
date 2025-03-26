@@ -4,7 +4,6 @@ import Accordion from "@/components/ui/Accordion";
 import PriceRangeSlider from "@/components/ui/PriceRangeSlider";
 import { objectToQueryString } from "@/lib/utils";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
 
 const FilterSection = () => {
     const CategoryItems = [
@@ -36,8 +35,8 @@ const FilterSection = () => {
     const searchParams = useSearchParams();
     const accordion = searchParams.get("openAccordion");
 
-    const minPrice = searchParams.get("minPrice") || "1";
-    const maxPrice = searchParams.get("maxPrice") || "100";
+    // const minPrice = searchParams.get("minPrice") || "1";
+    // const maxPrice = searchParams.get("maxPrice") || "100";
 
 
     const router = useRouter();
@@ -50,12 +49,21 @@ const FilterSection = () => {
     
         // Hapus parameter jika nilainya null atau kosong
         Object.keys(updatedParams).forEach((key) => {
-            if (updatedParams[key] === null) {
+            if (updatedParams[key] === null || updatedParams[key] === "") {
                delete updatedParams[key];
             }
         });
     
         console.log("Updated Search Params:", updatedParams);
+        if(updatedParams["openAccordion"] == "priceRange") {
+           
+            const params = new URLSearchParams(searchParams.toString());
+            params.set("minPrice", localStorage.getItem("minData"));
+            params.set("maxPrice", localStorage.getItem("maxData"));
+            params.set("openAccordion", "priceRange");
+            router.push(`?${params.toString()}`, { scroll: false });
+        }
+        
         router.push(`/?${objectToQueryString(updatedParams)}`, { scroll: false });
     };
     
@@ -72,9 +80,14 @@ const FilterSection = () => {
         );
     };
 
+
     
+    
+
     const updateUrl = (value) => {
         const params = new URLSearchParams(searchParams.toString());
+        localStorage.setItem("minData", value[0])
+        localStorage.setItem("maxData", value[1])
         params.set("minPrice", value[0]);
         params.set("maxPrice", value[1]);
         params.set("openAccordion", "priceRange");
@@ -117,13 +130,13 @@ const FilterSection = () => {
                         <PriceRangeSlider 
                             minValue={0} 
                             maxValue={100} 
-                            value={[minPrice, maxPrice]}
+                            value={[localStorage.getItem("minData"), localStorage.getItem("maxData")]}
                             handleChange={updateUrl}
                             />
                 </div>
                 <div className="flex justify-between mt-2">
-                    <span>${minPrice}</span>
-                    <span>${maxPrice}</span>
+                    <span>${localStorage.getItem("minData")}</span>
+                    <span>${localStorage.getItem("maxData")}</span>
                 </div>
             </Accordion>
             <Accordion
