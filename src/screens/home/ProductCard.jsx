@@ -1,3 +1,4 @@
+import { StarIcon } from "@/components/icons";
 import Image from "next/image";
 
 const ProductCard = () => {
@@ -15,6 +16,23 @@ const ProductCard = () => {
                 <div className="space-y-1">
                     <span className="text-2xl font-semibold leading-5">Product Name</span>
                     <p className="text-gray-400 text-md truncate" >This is the product description</p>
+                </div>
+
+                <div className="flex justify-between items-center ">
+                    <div className="flex gap-x-3 items-center text-xl font-semibold">
+                        <span className="text-gray-500 line-through">$19.99</span>
+                        <span className="text-2xl">$16.99</span>
+                    </div>
+                    <span className="text-gray-400">12 left</span>
+                </div>
+                <div className="flex justify-between items-center">
+                    <div className="flex gap-x-1">
+                        {
+                            [...Array(5)].map((star) => (
+                                <StarIcon />
+                            ))
+                        }
+                    </div>
                 </div>
             </div>
         </div>
