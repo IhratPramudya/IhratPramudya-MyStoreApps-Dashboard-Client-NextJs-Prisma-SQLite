@@ -1,14 +1,17 @@
 import Slider from "rc-slider";
 
-
-
-const PriceRangeSlider = ({ minValue,maxValue,value,handleChange}) => {
+const PriceRangeSlider = ({value, handleChange, minValue, maxValue}) => {
     return (
         <>
-            <Slider range min={minValue} max={maxValue} defaultValue={value} onChange={handleChange}/>
+            <Slider 
+                range 
+                minValue={minValue} 
+                maxValue={maxValue} 
+                defaultValue={value} 
+                onChange={handleChange}
+                />
         </>
     )
 }
-
 
 export default PriceRangeSlider;

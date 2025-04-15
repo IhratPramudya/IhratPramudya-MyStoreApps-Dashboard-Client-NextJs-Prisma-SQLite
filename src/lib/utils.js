@@ -8,9 +8,10 @@ export function cn(...inputs) {
 export function objectToQueryString(obj) {
     const params = [];
     for(const [key,value] of Object.entries(obj)) {
-        if(value!==null && value!==undefined && value!==""){
-            params.push(`${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`)
+        if(value!==null && value!==undefined) {
+            params.push(`${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`);
         }
     }
+    console.log(params)
     return params.join("&")
 }
