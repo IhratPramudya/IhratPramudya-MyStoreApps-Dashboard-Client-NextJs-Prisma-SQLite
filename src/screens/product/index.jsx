@@ -74,7 +74,7 @@ const Product = ({product}) => {
                     <h6 className="text-lg font-semibold">Size</h6>
                     <div className="flex flex-wrap gap-3">
                         {
-                            sizesOptions.map((item, index)=>(
+                            sizesOptions.filter((size)=>product[size]!==0).map((item, index)=>(
                                 <div key={index}>
                                     <input 
                                         type="radio" 

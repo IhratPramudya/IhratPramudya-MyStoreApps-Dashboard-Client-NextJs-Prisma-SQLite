@@ -7,6 +7,8 @@ import Input from "../ui/Input";
 import { useRouter, useSearchParams } from "next/navigation";
 import { objectToQueryString } from "@/lib/utils";
 import { useProductContext } from "./ProductContext";
+import Image from "next/image";
+import { getCustomerData } from "@/actions/authActions";
 
 
 const Header = () => {
@@ -52,7 +54,11 @@ const Header = () => {
     const [dropDownOpen, setDropDownOpen] = useState(false);
     const dropDownRef = useRef(null)
     const toggleDropDown = () => {
-        setDropDownOpen(!dropDownOpen);
+        if(customerData?.id) {
+            setDropDownOpen(!dropDownOpen);
+        } else {
+            router.push("/login")
+        }
     }
 
     const handleClickOutside = (event) => {
@@ -73,14 +79,33 @@ const Header = () => {
         }
     }, [dropDownOpen])
 
-    const {cartItems} = useProductContext()
+    const {cartItems, customerData, setCustomerData} = useProductContext()
+
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const res = await getCustomerData();
+            setCustomerData(res?.data)
+        }
+        fetchData()
+    }, [])
 
     return (
-        <div className="navbar">
+        
+        <div className="navbar ">
             <div className="container">
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center bg-gradient-to-r from-gray-800 to-gray-600">
                     <Link href="/">
-                        <h1 className="text-3xl font-semibold">MyStore</h1>
+                        {/* Gambar Logo */}
+                        <div className="w-72">
+                            <Image 
+                            src="/ihrat_logo.webp" 
+                            alt="IhratStore Logo" 
+                            width={300} 
+                            height={300} 
+                            className="rounded-lg shadow-lg"
+                            />
+                        </div>
                     </Link>
                     <div className="relative w-full max-w-lg">
                         <SearchIcon className="absolute left-2 top-2 w-7 h-7"/>
@@ -91,7 +116,7 @@ const Header = () => {
                             onChange={(e) => handleFilterChange("search", e.target.value)}
                         />
                     </div>
-                    <div className="relative" ref={dropDownRef}>
+                    <div className="relative right-16" ref={dropDownRef}>
                         <div className="flex gap-3">
                             <Link href="/cart">     
                                 <div className="relative">
@@ -109,6 +134,10 @@ const Header = () => {
                         {
                             dropDownOpen &&
                             <div className="dropdown-menu">
+                                <div className="px-4 py-2 border-b">
+                                    <p className="text-sm font-light">Welcome, </p>
+                                    <p className="text-lg">{customerData.customerName}</p>
+                                </div>
                                 <Link 
                                     href="/"
                                     className="block px-4 py-2 text-base text-gray-700 hover:bg-gray-100"

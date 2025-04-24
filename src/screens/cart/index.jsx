@@ -13,9 +13,14 @@ const Cart = () => {
         {label: "L", value: "large"}
     ]
 
-    const {cartItems, setCartitems} = useProductContext()
-
-    console.log(cartItems)
+    const {
+        cartItems, 
+        setCartitems, 
+        increaseQuantity, 
+        decreaseQuantity, 
+        removeProductFromCart,
+        totalAmount
+    } = useProductContext()
 
     const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -66,11 +71,24 @@ const Cart = () => {
                                             </div>
                                             <div className="flex justify-between items-center">
                                                 <div className="flex gap-x-4 items-center">
-                                                    <Button className="p-0 bg-transparent text-black">
+                                                    <Button 
+                                                        className="p-0 bg-transparent text-black"
+                                                        onClick={() => {
+                                                            if(item.quantity > 1) {
+                                                                decreaseQuantity(item.id)
+
+                                                            }
+                                                        }}
+                                                        disabled={item.quantity===1}
+                                                        >
                                                         <MinusCircleIcon className="w-8 h-8" />
                                                     </Button>
-                                                    <span className="text-xl font-semibold">1</span>
-                                                    <Button className="p-0 bg-transparent text-black">
+                                                    <span className="text-xl font-semibold">{item?.quantity}</span>
+                                                    <Button 
+                                                        className="p-0 bg-transparent text-black"
+                                                        onClick={() => increaseQuantity(item.id)}
+                                                        disabled={item.quantity===item[item.sizes]}
+                                                        >
                                                         <PlusCircleIcon className="w-8 h-8" />
                                                     </Button>
                                                 </div>
@@ -78,7 +96,7 @@ const Cart = () => {
                                                     <h6 className="text-lg font-semibold">Size</h6>
                                                     <div className="flex flex-wrap gap-3">
                                                         {
-                                                            sizesOptions.map((size, index)=>(
+                                                            sizesOptions.filter((size) => item[size.value] !==0).map((size, index)=>(
                                                                 <div key={index}>
                                                                     <input 
                                                                         type="radio" 
@@ -100,7 +118,10 @@ const Cart = () => {
                                                         }
                                                     </div>
                                                 </div>
-                                                <Button className="!bg-red-400 w-fit flex gap-2 items-center p-2">
+                                                <Button 
+                                                    className="!bg-red-400 w-fit flex gap-2 items-center p-2"
+                                                    onClick={() => removeProductFromCart(item.id)}
+                                                    >
                                                         <DeleteIcon/>
                                                         <span>Remove</span>
                                                 </Button>
@@ -120,16 +141,20 @@ const Cart = () => {
                         <div className="bg-white shadow-md rounded-xl p-5 flex flex-col justify-between">
                             <h1 className="text-2xl font-semibold border-b">Cart Summary</h1>
                             <div className="space-y-3">
-                                <div className="grid grid-cols-2 gap-2 text-xl">
-                                    <span className="truncate">Product Name</span>
-                                    <span className="text-end">$12.99</span>
-                                </div>
+                                {
+                                    cartItems.map((item, index) => (
+                                        <div className="grid grid-cols-2 gap-2 text-xl" key={index}>
+                                            <span className="truncate">{item?.name}</span>
+                                            <span className="text-end">${Number(item?.sellPrice*item.quantity).toFixed(2)}</span>
+                                        </div>
+                                    ))
+                                }
                             </div>
 
                             <div className="border-t">
                                 <div className="grid grid-cols-2 gap-2 text-xl font-semibold mt-2">
                                     <span>Total Amount</span>
-                                    <span className="text-end">$12.99</span>
+                                    <span className="text-end">${totalAmount.toFixed(2)}</span>
                                 </div>
                             </div>
                         </div>

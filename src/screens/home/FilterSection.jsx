@@ -77,7 +77,7 @@ const FilterSection = ({ searchParams, productTypes }) => {
     }
 
     return (
-        <div className="rounded-lg shadow-lg space-y-3 p-5 bg-white h-fit">
+        <div className="rounded-lg shadow-lg space-y-3 p-5 bg-gradient-to-r from-gray-100 to-gray-200 h-fit">
             <h1 className="text-2xl mb-8 font-semibold">Filters</h1>
 
             <Accordion
