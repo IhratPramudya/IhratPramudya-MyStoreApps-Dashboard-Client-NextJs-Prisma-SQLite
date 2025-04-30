@@ -81,3 +81,7 @@ export async function getCustomerData() {
     const data = await res.json();
     return data;
 }
+
+export async function logoutUser() {
+    await deleteCookies("customer_jwt_token")
+}
