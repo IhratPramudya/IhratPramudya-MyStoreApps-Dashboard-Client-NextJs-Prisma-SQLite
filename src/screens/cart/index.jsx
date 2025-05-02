@@ -48,7 +48,7 @@ const Cart = () => {
                         {
                             cartItems.length > 0 ? (
                                 cartItems.map((item, index) => (
-                                    <div className="w-full bg-white shadow-md rounded-xl">
+                                    <div key={index} className="w-full bg-white shadow-md rounded-xl">
                                     <div className="grid grid-cols-[auto_1fr]">
                                         <Image
                                             className="w-60 h-60 object-cover rounded-l-xl m-auto"

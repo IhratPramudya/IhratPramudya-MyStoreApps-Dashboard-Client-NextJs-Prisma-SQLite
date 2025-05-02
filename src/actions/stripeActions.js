@@ -1,5 +1,6 @@
 "use server";
 
+import { getCookie } from "@/lib/cookies";
 import Stripe from "stripe";
 
 const SIZES = {
@@ -7,6 +8,8 @@ const SIZES = {
     mediumSize: "M",
     largeSize: "L"
 }
+
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export async function createCheckoutSession(products, customerData) {
     const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -59,4 +62,18 @@ export async function getCheckoutSession(session_id) {
     const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
     const session = await stripeInstance.checkout.sessions.retrieve(session_id)
     return session;
+}
+
+
+export async function updateCheckoutData(data) {
+    const response = await fetch(`${BASE_URL}/api/checkout`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+            Cookie: "customer_jwt_token="+getCookie("customer_jwt_token")
+        },
+        body: JSON.stringify(data)
+    });
+    const resData = await response.json();
+    return resData;
 }
